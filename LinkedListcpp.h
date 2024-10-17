@@ -127,7 +127,7 @@ else{
    prev->next=cur->next;
    adjustInsert(cur->next,-1);
   }
-  
+  count --;
 }
 }
 template <class T>
@@ -150,6 +150,15 @@ template <class T>
 template <class T>
 void LinkedList<T>::move(T t, int pos){
   //TODO
+  //look for song inside list
+  int found = this->get(t);
+  if(found >= 0) {//song is found in the list
+    this->remove(t);
+    this->insert(t, pos);//add the song to the given position;
+  }
+  else {//song was not found
+    this->insert(t,pos);
+  }
 }
 
 template <class T>

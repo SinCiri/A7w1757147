@@ -10,7 +10,7 @@
 void populateRequests(Queue<Request>& q);
 void populateSongDataBase(LinkedList<Song> &list);
 void processQueue(LinkedList<Song> &list,Queue<Request>& q);
-void processRequest(std::string action, std::string title,std::string singer,int chartPos);
+void processRequest(LinkedList<Song>& list, std::string action, std::string title,std::string singer,int chartPos);
 
 //GIVEN
 int main() {
@@ -106,7 +106,6 @@ void populateRequests(Queue<Request> &q){
 void printTopTenSongs(LinkedList<Song>& list){
     std::cout<<"PLAYING TOP TEN SONG __________\n";
   list.print(10);
- ;
 }
 
 //Requires filled Song Database, a Song to add. The chart position given in the song is where it will get added. Note this is a Song that is not supposed to exist in database. 
@@ -115,11 +114,23 @@ void printTopTenSongs(LinkedList<Song>& list){
 //TODO
 void addThisSong(LinkedList<Song> &list, Song s){
  //TODO
+  int chartPos = s.getChartPosition();
+  //to allow song to display when printSong is called
+  if (chartPos>list.size()) {
+    std::cout << list.size() << std::endl;
+    chartPos = list.size();
+  }
  
- /* Use this code
-  if (found>=0) {std::cout<<"ADDED THIS SONG "<<found+1<<" " ;list.printSong(found+1);}
+  if (chartPos>=0) {
+    list.insert(s, chartPos);
+
+    std::cout<<"ADDED THIS SONG "<<chartPos<<" " ;
+    list.printSong(chartPos); 
+    std::cout << "\n";
+    }
   else std::cout<<"SORRY CANNOT FIND SONG \n";
-  */
+  
+  
  
 }
 
@@ -129,24 +140,29 @@ void addThisSong(LinkedList<Song> &list, Song s){
 //Modifies the Song database. Adjust chart position of all Songs affected by this removal- this adjustment is done in remove method using adjustPosition method
 void removeThisSong(LinkedList<Song> &list, Song s){
 
-  /* Use this code
+  int found = list.get(s);
 
-  if (found>=0) {std::cout<<"SORRY CANNOT REMOVE THIS SONG - STILL FOUND AT   "<<found;}
-  else{ std::cout<<"REMOVED THIS SONG \n"; 
+  if (found<0) {
+    std::cout<<"SORRY CANNOT REMOVE THIS SONG - SONG NOT FOUND "<< "\n";
+    }
+  else{ 
+        int chartPos = s.getChartPosition();
+        list.remove(s);
+        std::cout<<"REMOVED THIS SONG \n"; 
         std::cout<<"THE SONG AT CHARTPOSITION "<<chartPos<<" IS NOW ";
         list.printSong(chartPos); std::cout<<"\n";
-        */
+        
+       return;
  
   }
-
-
-
 }
+
+
 //TODO
 //Requires filled Song Database, a Song to move and its new position
 //Effects removes the song from its original chart position and inserts into given position
 //Modifies the Song database. Adjust chart position of all Songs affected by this insertion and removal. - this adjustment is done in remove method using adjustPosition method
-void moveThisSong(LinkedList<Song> &list, Song s, int pos){
+void moveThisSong(LinkedList<Song> &list, Song s, int pos) {
   int chartPos=list.get(s);
  
   std::cout<<"MOVING SONG "<<s.toString()<<"\n";
@@ -185,12 +201,25 @@ void processQueue(LinkedList<Song> &list ,Queue<Request>& q){
    
    int requestNumber=1;
    //Create an iterator for the Queue to iteratate through requests
-   
+        Queue<Request>::Iterator iter(q.begin());
        std::cout<<"-------------------------------------------------------------------------\n";
          // call processRequest
-        std::cout<<"-------------------------------------------------------------------------\n"
+         //processRequest(iter.getCur()->getData().getAction(), );
+        int requestNum = 0;
+         while(iter.getCur()) {
+            requestNum++;
+            std::string action = iter.getCur()->getData().getAction();
+            std::string singer = iter.getCur()->getData().getSinger();
+            std::string title = iter.getCur()->getData().getTitle();
+            int chartPos = iter.getCur()->getData().getChartPosition();
+            std::cout << "Request Number "<< requestNum << " " << iter.getCur()->toString() << std::endl;
+            processRequest(list, action, title, singer, chartPos);
+            iter = iter.next();
+            std::cout<<"-------------------------------------------------------------------------\n";
      
-       std::cout<<"-------------------------------------------------------------------------\n";
+           std::cout<<"-------------------------------------------------------------------------\n";
+         }
+        
 }
 
 //GIVEN
